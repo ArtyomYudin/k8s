@@ -1,0 +1,32 @@
+apiVersion: run.tanzu.vmware.com/v1alpha2
+kind: TanzuKubernetesCluster
+metadata:
+  name: legacy-web
+  namespace: production
+spec:
+  topology:
+    controlPlane:
+      replicas: 1
+      vmClass: best-effort-small
+      storageClass: tkgs-legacy-web-storage-policy
+      tkr:
+        reference:
+          name: v1.28.7---vmware.1-fips.1-tkg.1
+    nodePools:
+    - name: worker
+      replicas: 1
+      vmClass: best-effort-small
+      storageClass: tkgs-legacy-web-storage-policy
+      tkr:
+        reference:
+          name: v1.28.7---vmware.1-fips.1-tkg.1
+  settings:
+    network:
+      cni:
+        name: antrea
+      services:
+        cidrBlocks: ["10.97.0.0/23"]
+      pods:
+        cidrBlocks: ["10.97.2.0/23"]
+    storage:
+      defaultClass: tkgs-legacy-web-storage-policy

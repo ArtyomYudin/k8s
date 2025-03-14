@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb-sts
+  namespace: mariadb
+spec: # specification for deployment resource
+  replicas: 1 # how many replicas of pods we want to create
+  selector:
+    matchLabels:
+      app: mariadb
+  template: # blueprint for pods
+    metadata:
+      labels:
+        app: mariadb # service will look for this label
+    spec: # specification for Pods
+      containers:
+      - name: mariadb
+        image: mariadb
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: mariadb-root-password
+        - name: MARIADB_DATABASE
+          value: wordpress
+        volumeMounts:
+        - name: mariadb-pv
+          mountPath: bitnami/mariadb
+      volumes:
+      - name: mariadb-pv
+        persistentVolumeClaim:
+          claimName: mariadb-pv-claim
+
+
+
+
+
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  labels:
+#    name: mariadb
+#  name: mariadb
+#  annotations:
+#    source: ""
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      name: mariadb
+#  template:
+#    metadata:
+#      labels:
+#        name: mariadb
+#    spec:
+#      initContainers:
+#      - args:
+#        - |
+#          mkdir -p /bitnami/mariadb
+#          chown -R "1001:1001" "/bitnami/mariadb"
+#        command:
+#        - /bin/bash
+#        - -ec
+#        image: docker.io/bitnami/bitnami-shell:10-debian-10-r158
+#        imagePullPolicy: Always
+#        name: volume-permissions
+#        resources: {}
+#        securityContext:
+#          runAsUser: 0
+#        terminationMessagePath: /dev/termination-log
+#        terminationMessagePolicy: File
+#        volumeMounts:
+#        - mountPath: /bitnami/mariadb
+#          name: maria-db
+#      restartPolicy: Always
+#      schedulerName: default-scheduler
+#      securityContext:
+#        fsGroup: 1001
+#      serviceAccountName: default
+#      terminationGracePeriodSeconds: 30
+#      volumes:
+#      - name: maria-db
+#        persistentVolumeClaim:
+#          claimName: mariadb-storage
+#      containers:
+#      - image: bitnami/mariadb
+#        name: mariadb
+#        env:
+#        - name: MARIADB_ROOT_PASSWORD
+#          valueFrom:
+#            secretKeyRef:
+#              key: database-admin-password
+#              name: mariadb-users-secret
+#        - name: MARIADB_DATABASE
+#          valueFrom:
+#            secretKeyRef:
+#              key: database-name
+#              name: mariadb-users-secret
+#        - name: MARIADB_PASSWORD
+#          valueFrom:
+#            secretKeyRef:
+#              key: database-password
+#              name: mariadb-users-secret
+#        - name: MARIADB_USERNAME
+#          valueFrom:
+#            secretKeyRef:
+#              key: database-user
+#              name: mariadb-users-secret
+#        readinessProbe:
+#          exec:
+#           command:
+#            - /bin/sh
+#            - -i
+#            - -c
+#            - mariadb 127.0.0.1:27017/$MARIADB_DATABASE -u $MARIADB_USERNAME -p $MMARIADB_PASSWORD
+#              --eval="quit()"
+#        ports:
+#        - name: mariadb
+#          containerPort: 27017
+#        volumeMounts:
+#          - name: maria-db
+#            mountPath: /bitnami/mariadb/

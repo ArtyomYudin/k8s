@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: r48-storage
+  namespace: r48
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: tkgs-legacy-web-storage-policy
+  resources:
+    requests:
+      storage: 1Gi

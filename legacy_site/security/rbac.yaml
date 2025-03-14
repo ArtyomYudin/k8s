@@ -1,0 +1,52 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kapeo-sa-clusterrole
+rules:
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+  resourceNames:
+  - kapeo-sa
+- apiGroups: [""]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "watch", "list"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kapeo-sa-clusterrole
+  namespace: kapeo-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kapeo-sa-clusterrole
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:serviceaccounts
+- kind: ServiceAccount
+  name: default
+  namespace: kapeo-sa
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kapeo-sa-clusterrole
+  namespace: kapeo-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kapeo-sa-clusterrole
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:serviceaccounts
+- kind: ServiceAccount
+  name: default
+  namespace: kapeo-sa
