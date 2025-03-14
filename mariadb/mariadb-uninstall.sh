@@ -1,8 +1,8 @@
 #!/bin/bash
 
-kubectl delete -n mariadb -f security/rbac.yaml
+#kubectl delete -n mariadb -f security/rbac.yaml
 kubectl delete -n mariadb -f security/mariadb-secret.yaml
-kubectl delete -n mariadb -f statefulsets/mariadb-deployment.yaml
+kubectl delete -n mariadb -f statefulsets/mariadb-statefulset.yaml
 
 if [[ $# -gt 0  && "$1" == "keeppvc" ]]
 then
