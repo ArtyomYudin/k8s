@@ -41,7 +41,7 @@ spec:
             - name: MODX_INSTALL_TYPE
               value: "cli"
             - name: MODX_DB_SERVER
-              value: "mariadb.mariadb.svc.cluster.local"
+              value: "mariadb.mariadb.svc.cluster.local"  #servicename.namespace.svc.cluster.local
             - name: MODX_DB_CONNECTION_CHARSET
               value: "utf8mb4"
             - name: MODX_DB_CHARSET
