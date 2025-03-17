@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: php-fpm
+  labels:
+    name: php-fpm
+  namespace: ${BRANCH_NAME}
+spec:
+  type: ClusterIP
+  selector:
+    name: php-fpm
+  ports:
+    - port: 9000
+      targetPort: 9000

@@ -1,41 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: r48
+  name: php-fpm
   labels:
-    name: r48
+    name: php-fpm
+  namespace: ${BRANCH_NAME}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: r48
+      name: php-fpm
   template:
     metadata:
       labels:
-        name: r48
+        name: php-fpm
     spec:
       restartPolicy: Always
       schedulerName: default-scheduler
-      securityContext:
-        fsGroup: 1001
+      #securityContext:
+      #  fsGroup: 1001
       serviceAccountName: default
       terminationGracePeriodSeconds: 30
       volumes:
-        - name: nginx-certs
+        - name: php-fpm-pv
           persistentVolumeClaim:
-            claimName: r48-storage
+            claimName: ${BRANCH_ID}-pv-claim
       containers:
-        - name: r48
-          image: hanna.center-inform.ru/kapeo-sa/kapeo-sa-nginx:latest
+        - name: php-fpm
+          image: artyomyudin/php-fpm:5.3.29
           securityContext:
             runAsUser: 0
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - containerPort: 9000
               protocol: TCP
           volumeMounts:
-            - name: nginx-certs
-              mountPath: /bitnami/certs/
-      imagePullSecrets:
-        - name: regsecret
-      
+            - name: php-fpm-pv
+              mountPath: /app

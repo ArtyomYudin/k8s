@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    name: nginx
+  namespace: ${BRANCH_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginx
+  template:
+    metadata:
+      labels:
+        name: nginx
+    spec:
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      #securityContext:
+      #  fsGroup: 1001
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: nginx-pv
+          persistentVolumeClaim:
+            claimName: ${BRANCH_ID}-pv-clain
+      containers:
+        - name: nginx
+          image: artyomyudin/nginx:1.22.1
+          securityContext:
+            runAsUser: 0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8443
+              protocol: TCP
+          env:
+            - name: SITE
+              value: "testsite.ru"
+            - name: TZ
+              value: "Europe/Moscow"
+            - name: NGINX_SKIP_SAMPLE_CERTS
+              value: "false"
+            - name: ENDPOINT
+              value: "php-fpm"
+            - name: PROXY
+              value: "false"
+          volumeMounts:
+            - name: nginx-pv
+              mountPath: /app
+
+      

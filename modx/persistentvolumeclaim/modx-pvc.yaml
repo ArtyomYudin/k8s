@@ -1,8 +1,8 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: ${BRANCH_ID}-storage
-  namespace: ${BRANCH_NAME}
+  name: ${SITE_NAME}-pv-claim
+  namespace: ${SITE_NAME}
 spec:
   accessModes:
     - ReadWriteOnce
