@@ -39,54 +39,54 @@ spec:
               mountPath: /app
           env:
             - name: MODX_INSTALL_TYPE
-              value: cli
+              value: "cli"
             - name: MODX_DB_SERVER
-              value: mariadb.mariadb.svc.cluster.local
+              value: "mariadb.mariadb.svc.cluster.local"
             - name: MODX_DB_CONNECTION_CHARSET
-              value: utf8mb4
+              value: "utf8mb4"
             - name: MODX_DB_CHARSET
-              value: utf8mb4
+              value: "utf8mb4"
             - name: MODX_DB_CHARSET_COLLATION
-              value: utf8mb4_general_ci
+              value: "utf8mb4_general_ci"
             - name: MODX_TABLE_PREFIX
-              value: modx_
+              value: "modx_"
             - name: MODX_HTTPS_PORT
               value: "443"
             - name: MODX_HTTP_HOST
-              value: nginx
+              value: "nginx"
             - name: MODX_LANGUAGE
-              value: en
+              value: "en"
             - name: MODX_CMS_ADMIN
-              value: admin
+              value: "admin"
             - name: MODX_CMS_PASS
               valueFrom:
                 secretKeyRef:
                   name: modx-secret
                   key: modx-cms-admin-pass
             - name: MODX_CMS_EMAIL
-              value: email@address.com
+              value: "email@address.com"
             - name: MODX_REMOVE_SETUP_DIRECTORY
               value: "1"
             - name: MODX_CONTEXT_WEB_PATH
-              value: /app/
+              value: "/app/"
             - name: MODX_CONTEXT_WEB_URL
-              value: /
+              value: "/"
             - name: MODX_CONTEXT_CONNECTORS_PATH
-              value: /app/connectors/
+              value: "/app/connectors/"
             - name: MODX_CONTEXT_CONNECTORS_URL
-              value: /connectors/
+              value: "/connectors/"
             - name: MODX_CONTEXT_MANAGER_PATH
-              value: /app/manager/
+              value: "/app/manager/"
             - name: MODX_CONTEXT_MANAGER_URL
-              value: /manager/
+              value: "/manager/"
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: modx-secret
                   key: mariadb-root-password
             - name: MARIADB_DATABASE
-              value: modx
+              value: "modx"
             - name: MARIADB_USER
-              value: modx_user
+              value: "modx_user"
             - name: MARIADB_PASSWORD
-              value: modx_pass
+              value: "modx_pass"
