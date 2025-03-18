@@ -14,6 +14,6 @@ if [[ $# -gt 0  && "$3" == "keeppvc" ]]
 then
     echo "Keeping namespace and persistent volume claim"
 else
-    envsubst <  persistentvolumeclaim/legacy-site-pvc.yaml | kubectl delete -f -
+    envsubst <  persistentvolumeclaim/branche-pvc.yaml | kubectl delete -f -
     kubectl delete namespace $BRANCH_NAME
 fi

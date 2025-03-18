@@ -20,7 +20,7 @@ spec:
       #securityContext:
       #  fsGroup: 1001
       serviceAccountName: default
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       volumes:
         - name: php-fpm-pv
           persistentVolumeClaim:
@@ -39,7 +39,7 @@ spec:
               mountPath: /app
           env:
             - name: MODX_INSTALL_TYPE
-              value: "cli"
+              value: "cli"  #cli / web
             - name: MODX_DB_SERVER
               value: "mariadb.mariadb.svc.cluster.local"  #servicename.namespace.svc.cluster.local
             - name: MODX_DB_CONNECTION_CHARSET
@@ -85,8 +85,8 @@ spec:
                   name: modx-secret
                   key: mariadb-root-password
             - name: MARIADB_DATABASE
-              value: "modx"
+              value: "modx-1"
             - name: MARIADB_USER
-              value: "modx_user"
+              value: "root"
             - name: MARIADB_PASSWORD
-              value: "modx_pass"
+              value: "rootpass"
