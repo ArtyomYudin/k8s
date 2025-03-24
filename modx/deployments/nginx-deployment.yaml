@@ -35,8 +35,8 @@ spec:
             - containerPort: 8443
               protocol: TCP
           env:
-            - name: SITE
-              value: "testsite.ru"
+            - name: SITES
+              value: "masterutm.ru"
             - name: TZ
               value: "Europe/Moscow"
             - name: NGINX_SKIP_SAMPLE_CERTS

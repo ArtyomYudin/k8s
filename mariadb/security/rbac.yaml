@@ -20,7 +20,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: mariadb-cluster-role
-  namespace: mariadb
+  namespace: ${NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -31,14 +31,14 @@ subjects:
   name: system:serviceaccounts
 - kind: ServiceAccount
   name: default
-  namespace: mariadb
+  namespace: ${NAMESPACE}
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: mariadb-cluster-role
-  namespace: mariadb
+  namespace: ${NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -49,4 +49,4 @@ subjects:
   name: system:serviceaccounts
 - kind: ServiceAccount
   name: default
-  namespace: mariadb
+  namespace: ${NAMESPACE}

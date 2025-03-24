@@ -41,7 +41,7 @@ spec:
             - name: MODX_INSTALL_TYPE
               value: "cli"  #cli / web
             - name: MODX_DB_SERVER
-              value: "mariadb.mariadb.svc.cluster.local"  #servicename.namespace.svc.cluster.local
+              value: "mariadb.database.svc.cluster.local"  #servicename.namespace.svc.cluster.local
             - name: MODX_DB_CONNECTION_CHARSET
               value: "utf8mb4"
             - name: MODX_DB_CHARSET
@@ -61,7 +61,7 @@ spec:
             - name: MODX_CMS_PASS
               valueFrom:
                 secretKeyRef:
-                  name: modx-secret
+                  name: ${SITE_NAME}-secret
                   key: modx-cms-admin-pass
             - name: MODX_CMS_EMAIL
               value: "email@address.com"
@@ -79,14 +79,12 @@ spec:
               value: "/app/manager/"
             - name: MODX_CONTEXT_MANAGER_URL
               value: "/manager/"
-            - name: MARIADB_ROOT_PASSWORD
+            - name: MARIADB_DATABASE
+              value: ${SITE_NAME}
+            - name: MARIADB_USER
+              value: ${SITE_NAME}
+            - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: modx-secret
-                  key: mariadb-root-password
-            - name: MARIADB_DATABASE
-              value: "modx-1"
-            - name: MARIADB_USER
-              value: "root"
-            - name: MARIADB_PASSWORD
-              value: "rootpass"
+                  name: ${SITE_NAME}-secret
+                  key: mariadb-modx-password
