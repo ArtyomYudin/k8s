@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: label-namespace
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+spec:
+  template:
+    spec:
+      containers:
+      - name: label-namespace
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kkubectl label namespace {{ .Release.Namespace }} \
+            pod-security.kubernetes.io/audit=baseline \
+            pod-security.kubernetes.io/audit-version=v1.32.3 \
+            pod-security.kubernetes.io/enforce=baseline \
+            pod-security.kubernetes.io/enforce-version=v1.32.3 \
+            pod-security.kubernetes.io/warn=baseline \
+            pod-security.kubernetes.io/warn-version=v1.32.3 --overwrite
+      restartPolicy: OnFailure
