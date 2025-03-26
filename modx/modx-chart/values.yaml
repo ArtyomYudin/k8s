@@ -2,6 +2,26 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Labels settings in namespace
+namespace:
+  annotations: {}
+  labels:
+    # Enforce Pod Security Standards with Namespace Labels
+    # https://kubernetes.io/docs/tasks/configure-pod-container/enforce-standards-namespace-labels/
+    - key: pod-security.kubernetes.io/enforce
+      value: baseline
+    # - key: pod-security.kubernetes.io/enforce-version
+    #   value: latest
+    - key: pod-security.kubernetes.io/audit
+      value: baseline
+    # - key: pod-security.kubernetes.io/audit-version
+    #   value: latest
+    - key: pod-security.kubernetes.io/warn
+      value: baseline
+    # - key: pod-security.kubernetes.io/warn-version
+    #   value: latest
+
+
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
 
@@ -11,25 +31,40 @@ image:
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "3.1.1"
+  tag: 3.1.1
+  # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
 
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
 # This is to override the chart name.
 nameOverride: ""
 fullnameOverride: ""
+
+annotations: {}
+
+# Labels to add to the MODX deployment's. Optional.
+labels: {}
+
+rbac:
+  # Whether to create the Velero role and role binding to give all permissions to the namespace to Velero.
+  create: true
+  # Whether to create the cluster role binding to give administrator permissions to Velero
+  clusterAdministrator: true
+  # Name of the ClusterRole.
+  clusterAdministratorName: modx-chart-cluster-role
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Automatically mount a ServiceAccount's API credentials?
-  automount: true
+  # automount: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name:
+  labels:
+  imagePullSecrets: []
 
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -39,18 +74,26 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+  #fsGroupChangePolicy: Always
+  #supplementalGroups: [ ]
+  #fsGroup: 1001
 
-securityContext:
+containerSecurityContext:
+  #seLinuxOptions: {}
+  #runAsUser: 1001
+  runAsUser: 0
+  #runAsGroup: 1001
+  #runAsNonRoot: true
+  privileged: false
+  readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
   capabilities:
     drop: ["ALL"]
-  readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  runAsUser: 1000
   seccompProfile:
-    type: RuntimeDefault
+    type: "RuntimeDefault"
 
+# The number of seconds to allow for graceful termination of the pod. Optional.
+terminationGracePeriodSeconds: 3600
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
@@ -59,21 +102,6 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 9000
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -92,6 +120,7 @@ livenessProbe:
   httpGet:
     path: /
     port: http
+
 readinessProbe:
   httpGet:
     path: /
@@ -134,3 +163,22 @@ persistence:
   additionalVolumes: []
   # if you need any additional volume mounts, you can define them here
   additionalMounts: []
+
+kubectl:
+  image:
+    repository: docker.io/bitnami/kubectl
+    # Digest value example: sha256:d238835e151cec91c6a811fe3a89a66d3231d9f64d09e5f3c49552672d271f38.
+    # If used, it will take precedence over the kubectl.image.tag.
+    # digest:
+    # kubectl image tag. If used, it will take precedence over the cluster Kubernetes version.
+    # tag: 1.16.15
+  # Container Level Security Context for the 'kubectl' container of the crd jobs. Optional.
+  # See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  containerSecurityContext: {}
+  # Resource requests/limits to specify for the upgrade/cleanup job. Optional
+  resources: {}
+  # Annotations to set for the upgrade/cleanup job. Optional.
+  annotations: {}
+  # Labels to set for the upgrade/cleanup job. Optional.
+  labels: {}
+

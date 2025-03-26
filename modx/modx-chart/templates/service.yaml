@@ -2,8 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "modx-chart.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "modx-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "modx-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "modx-chart.chart" . }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -11,4 +15,6 @@ spec:
       targetPort: 9000
       protocol: TCP
   selector:
-    {{- include "modx-chart.selectorLabels" . | nindent 4 }}
+    name: modx-chart
+    app.kubernetes.io/name: {{ include "modx-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

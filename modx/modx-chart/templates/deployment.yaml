@@ -1,16 +1,32 @@
+{{/* 'securityContext' got renamed to 'podSecurityContext', merge both dicts into one for backward compatibility */}}
+{{- $podSecurityContext := merge (.Values.podSecurityContext | default dict) (.Values.securityContext | default dict) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "modx-chart.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
-    {{- include "modx-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "modx-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "modx-chart.chart" . }}
+    component: velero
+    {{- with .Values.labels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "modx-chart.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "modx-chart.name" . }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,23 +34,32 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "modx-chart.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
+        name: modx-chart
+        app.kubernetes.io/name: {{ include "modx-chart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        helm.sh/chart: {{ include "modx-chart.chart" . }}
+        {{- if .Values.podLabels }}
+          {{- toYaml .Values.podLabels | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- if .Values.image.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      {{- range .Values.image.imagePullSecrets }}
+        - name: {{ . }}
       {{- end }}
-      serviceAccountName: {{ include "modx-chart.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- end }}
+      restartPolicy: Always
+      serviceAccountName: {{ include "modx-chart.serviceAccount" . }}
+      {{- with $podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
+          {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -44,38 +69,25 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
-            - mountPath: /app
-              name: config
-              {{- if .Values.persistence.additionalMounts }}
-                {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
-              {{- end }}
-          {{- end}}
-      {{- with .Values.volumes }}
+              - name: modx-storage
+                mountPath: /app
       volumes:
-        - name: config
+        - name: modx-storage
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (include "home-assistant.fullname" .) }}
+            #claimName: {{ .Values.persistence.existingClaim | default (include "modx-chart.fullname" .) }}
+            claimName: {{ include "modx-chart.fullname" . }}-pvc
           {{- else }}
           emptyDir: { }
           {{- end }}
-          {{- if .Values.persistence.additionalVolumes }}
-            {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
-          {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

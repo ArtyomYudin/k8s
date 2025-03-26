@@ -4,7 +4,7 @@ kind: Namespace
 metadata:
   name: {{ .Release.Namespace }}
   annotations:
-    my-annoation: {{ .Values.MyAnnotation }}
+    my-annoation: {{ .Values.namespace.annotations }}
   labels:
     release: {{ .Release.Name }}
 {{- end -}}

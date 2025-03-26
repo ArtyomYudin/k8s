@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "modx-chart.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 
 {{/*
@@ -11,17 +11,17 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "modx-chart.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Create chart name and version as used by the chart label.
@@ -51,12 +51,24 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
+Create the name of the service account to use for creating or deleting the MODX server
 */}}
-{{- define "modx-chart.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "modx-chart.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+{{- define "modx-chart.serviceAccount" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "modx-chart.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Kubernetes version
+Built-in object .Capabilities.KubeVersion.Minor can provide non-number output
+For examples:
+- on GKE it returns "18+" instead of "18"
+- on EKS it returns "20+" instead of "20"
+*/}}
+{{- define "chart.KubernetesVersion" -}}
+{{- $minorVersion := .Capabilities.KubeVersion.Minor | regexFind "[0-9]+" -}}
+{{- printf "%s.%s" .Capabilities.KubeVersion.Major $minorVersion -}}
+{{- end -}}

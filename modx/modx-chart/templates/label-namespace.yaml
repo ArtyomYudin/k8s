@@ -1,26 +1,39 @@
+{{- if .Values.namespace }}
+{{- if gt (len .Values.namespace.labels) 0 }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: label-namespace
+  name: {{ include "modx-chart.fullname" . }}-label-namespace
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook": post-install,post-upgrade,post-rollback #pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+  labels:
+    app.kubernetes.io/name: {{ include "modx-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "modx-chart.chart" . }}
 spec:
   template:
     spec:
+      serviceAccountName: {{ include "modx-chart.serviceAccount" . }}
       containers:
       - name: label-namespace
-        image: bitnami/kubectl:latest
+        {{- if .Values.kubectl.image.digest }}
+        image: "{{ .Values.kubectl.image.repository }}@{{ .Values.kubectl.image.digest }}"
+        {{- else if .Values.kubectl.image.tag }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- else }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ template "chart.KubernetesVersion" . }}"
+        {{- end }}
         command:
         - /bin/sh
         - -c
         - |
-          kkubectl label namespace {{ .Release.Namespace }} \
-            pod-security.kubernetes.io/audit=baseline \
-            pod-security.kubernetes.io/audit-version=v1.32.3 \
-            pod-security.kubernetes.io/enforce=baseline \
-            pod-security.kubernetes.io/enforce-version=v1.32.3 \
-            pod-security.kubernetes.io/warn=baseline \
-            pod-security.kubernetes.io/warn-version=v1.32.3 --overwrite
-      restartPolicy: OnFailure
+          {{- range .Values.namespace.labels }}
+          kubectl label namespace {{ $.Release.Namespace }} {{ .key }}={{ .value }}
+          {{- end }}
+      restartPolicy: Never
+  backoffLimit: 3
+{{- end }}
+{{- end }}
