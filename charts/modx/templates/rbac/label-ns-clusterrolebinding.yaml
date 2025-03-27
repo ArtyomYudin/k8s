@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    {{- include "modx.labelnamespace.labels" . | nindent 4 }}
+  name: {{ template "modx.labelnamespace.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "modx.labelnamespace.serviceAccountName" . }}
+{{ include "modx.namespace" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "modx.labelnamespace.fullname" . }}

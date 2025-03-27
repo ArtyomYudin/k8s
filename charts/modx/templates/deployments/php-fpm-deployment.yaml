@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+  {{- include "modx.php-fpm.labels" $ | nindent 4 }}
+  name: {{ include "modx.php-fpm.fullname" . }}
+{{ include "modx.namespace" . | indent 2 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "modx.php-fpm.matchLabels" . | nindent 6 }}
+  replicas: {{ .Values.phpfpm.replicaCount }}
+  template:
+    metadata:
+      {{- with .Values.phpfpm.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "modx.php-fpm.labels" . | nindent 8 }}
+        {{- if .Values.phpfpm.podLabels}}
+        {{ toYaml .Values.phpfpm.podLabels | nindent 8 }}
+        {{- end}}
+    spec:
+      {{- if .Values.phpfpm.schedulerName }}
+      schedulerName: "{{ .Values.phpfpm.schedulerName }}"
+      {{- end }}
+      serviceAccountName: {{ include "modx.php-fpm.serviceAccountName" . }}
+      {{- if .Values.phpfpm.extraInitContainers }}
+      initContainers:
+        {{ toYaml .Values.phpfpm.extraInitContainers | indent 8 }}
+      {{- end }}
+      {{- if .Values.phpfpm.priorityClassName }}
+      priorityClassName: "{{ .Values.phpfpm.priorityClassName }}"
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | indent 2 }}
+      {{- end }}
+      {{- if .Values.phpfpm.nodeSelector }}
+      nodeSelector:
+        {{ toYaml .Values.phpfpm.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.phpfpm.podSecurityContext }}
+      securityContext:
+        {{ toYaml .Values.phpfpm.podSecurityContext | indent 8 }}
+      {{- end }}
+      {{- if .Values.phpfpm.tolerations }}
+      tolerations:
+        {{ toYaml .Values.phpfpm.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.phpfpm.affinity }}
+      affinity:
+        {{ toYaml .Values.phpfpm.affinity | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "modx.name" . }}-{{ .Values.phpfpm.name }}
+          image: "{{ .Values.phpfpm.image.repository }}:{{ .Values.phpfpm.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.phpfpm.image.pullPolicy }}
+          {{- with .Values.phpfpm.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.phpfpm.service.servicePort }}
+              protocol: TCP
+          {{- with .Values.phpfpm.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+              - name: modx-storage
+                mountPath: /app
+      volumes:
+        - name: modx-storage
+          {{- if .Values.phpfpm.persistentVolume.enabled }}
+          persistentVolumeClaim:
+            #claimName: {{ .Values.phpfpm.persistentVolume.existingClaim | default (include "modx.php-fpm.fullname" .) }}
+            claimName: {{ include "modx.php-fpm.fullname" . }}-pvc
+          {{- else }}
+          emptyDir: { }
+          {{- end }}

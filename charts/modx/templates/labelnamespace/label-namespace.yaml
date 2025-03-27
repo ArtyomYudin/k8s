@@ -3,20 +3,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "modx-chart.fullname" . }}-label-namespace
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "modx.name" . }}-label-namespace
+{{ include "modx.namespace" . | indent 2 }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade,post-rollback #pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": hook-succeeded
   labels:
-    app.kubernetes.io/name: {{ include "modx-chart.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "modx-chart.chart" . }}
+  {{- include "modx.common.metaLabels" $ | nindent 4 }}
 spec:
   template:
     spec:
-      serviceAccountName: {{ include "modx-chart.serviceAccount" . }}
+      serviceAccountName: {{ include "modx.labelnamespace.serviceAccountName" . }}
       containers:
       - name: label-namespace
         {{- if .Values.kubectl.image.digest }}
@@ -25,6 +22,10 @@ spec:
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
         {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ template "chart.KubernetesVersion" . }}"
+        {{- end }}
+        {{- with .Values.labelnamespace.containerSecurityContext }}
+        securityContext:
+        {{- toYaml . | nindent 12 }}
         {{- end }}
         command:
         - /bin/sh

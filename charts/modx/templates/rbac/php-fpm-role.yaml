@@ -1,0 +1,15 @@
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+      {{- include "modx.php-fpm.labels" $ | nindent 4 }}
+  name: {{ template "modx.php-fpm.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+  - {{ template "modx.php-fpm.fullname" . }}
+{{- end }}

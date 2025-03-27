@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.phpfpm.service.annotations }}
+  annotations:
+{{ toYaml .Values.phpfpm.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "modx.php-fpm.labels" . | nindent 4 }}
+{{- if .Values.phpfpm.service.labels }}
+{{ toYaml .Values.phpfpm.service.labels | indent 4 }}
+{{- end }}
+  name: {{ template "modx.php-fpm.fullname" . }}
+{{ include "modx.namespace" . | indent 2 }}
+spec:
+  type: {{ .Values.phpfpm.service.type }}
+  ports:
+    - port: {{ .Values.phpfpm.service.servicePort }}
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    {{- include "modx.php-fpm.matchLabels" . | nindent 4 }}

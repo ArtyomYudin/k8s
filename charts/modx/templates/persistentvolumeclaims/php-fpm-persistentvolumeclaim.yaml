@@ -1,0 +1,22 @@
+{{- if and .Values.phpfpm.persistentVolume.enabled  }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "modx.php-fpm.fullname" . }}-pvc
+  labels:
+     {{- include "modx.php-fpm.labels" . | nindent 4 }}
+spec:
+  volumeMode: Filesystem
+  accessModes:
+  {{ toYaml .Values.phpfpm.persistentVolume.accessModes | indent 4 }}
+  {{- if .Values.phpfpm.persistentVolume.storageClass }}
+  {{- if (eq "-" .Values.phpfpm.persistentVolume.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.phpfpm.persistentVolume.storageClass }}"
+  {{- end }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.phpfpm.persistentVolume.size | quote }}
+{{- end }}
