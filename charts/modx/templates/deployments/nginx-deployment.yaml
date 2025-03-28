@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+  {{- include "modx.nginx.labels" $ | nindent 4 }}
+  name: {{ include "modx.nginx.fullname" . }}
+{{ include "modx.namespace" . | indent 2 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "modx.nginx.matchLabels" . | nindent 6 }}
+  replicas: {{ .Values.nginx.replicaCount }}
+  template:
+    metadata:
+      {{- with .Values.nginx.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "modx.nginx.labels" . | nindent 8 }}
+        {{- if .Values.nginx.podLabels}}
+        {{ toYaml .Values.nginx.podLabels | nindent 8 }}
+        {{- end}}
+    spec:
+      {{- if .Values.nginx.schedulerName }}
+      schedulerName: "{{ .Values.nginx.schedulerName }}"
+      {{- end }}
+      {{- if .Values.nginx.extraInitContainers }}
+      initContainers:
+        {{ toYaml .Values.nginx.extraInitContainers | indent 8 }}
+      {{- end }}
+      {{- if .Values.nginx.priorityClassName }}
+      priorityClassName: "{{ .Values.nginx.priorityClassName }}"
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | indent 2 }}
+      {{- end }}
+      {{- if .Values.nginx.nodeSelector }}
+      nodeSelector:
+        {{ toYaml .Values.nginx.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.nginx.podSecurityContext }}
+      securityContext:
+        {{ toYaml .Values.nginx.podSecurityContext | indent 8 }}
+      {{- end }}
+      {{- if .Values.nginx.tolerations }}
+      tolerations:
+        {{ toYaml .Values.nginx.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.nginx.affinity }}
+      affinity:
+        {{ toYaml .Values.nginx.affinity | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "modx.name" . }}-{{ .Values.nginx.name }}
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          {{- with .Values.nginx.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          {{- with .Values.nginx.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+              - name: modx-storage
+                mountPath: /app
+          env:
+            - name: SITES
+              value: "masterutm.ru"
+            - name: TZ
+              value: "Europe/Moscow"
+            - name: NGINX_SKIP_SAMPLE_CERTS
+              value: "false"
+            - name: ENDPOINT
+              value: {{ template "modx.name" . }}-{{ .Values.phpfpm.name }}
+            - name: PROXY
+              value: "false"
+      volumes:
+        - name: modx-storage
+          {{- if .Values.phpfpm.persistentVolume.enabled }}
+          persistentVolumeClaim:
+            #claimName: {{ .Values.nginx.persistentVolume.existingClaim | default (include "modx.nginx.fullname" .) }}
+            claimName: {{ include "modx.php-fpm.fullname" . }}-pvc
+          {{- else }}
+          emptyDir: { }
+          {{- end }}

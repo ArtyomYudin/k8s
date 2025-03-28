@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.nginx.service.annotations }}
+  annotations:
+{{ toYaml .Values.nginx.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "modx.nginx.labels" . | nindent 4 }}
+{{- if .Values.nginx.service.labels }}
+{{ toYaml .Values.nginx.service.labels | indent 4 }}
+{{- end }}
+  name: {{ template "modx.nginx.fullname" . }}
+{{ include "modx.namespace" . | indent 2 }}
+spec:
+  type: {{ .Values.nginx.service.type }}
+  ports:
+    - port: {{ .Values.nginx.service.servicePort }}
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    {{- include "modx.nginx.matchLabels" . | nindent 4 }}

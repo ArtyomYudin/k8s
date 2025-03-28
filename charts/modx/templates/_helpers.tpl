@@ -125,34 +125,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 
 
-
-
-
-
-{{/*
-Create the name of the service account to use for the phpfpm component
-*/}}
-{{- define "modx.php-fpm.serviceAccountName" -}}
-{{- if .Values.serviceAccounts.phpfpm.create -}}
-    {{ default (include "modx.php-fpm.fullname" .) .Values.serviceAccounts.phpfpm.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccounts.phpfpm.name }}
-{{- end -}}
-{{- end -}}
-
-
-{{/*
-Create the name of the service account to use for the nginx component
-*/}}
-{{- define "modx.nginx.serviceAccountName" -}}
-{{- if .Values.serviceAccounts.nginx.create -}}
-    {{ default (include "modx.nginx.fullname" .) .Values.serviceAccounts.nginx.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccounts.nginx.name }}
-{{- end -}}
-{{- end -}}
-
-
 {{/*
 Create the name of the service account to use for the label-ns component
 */}}

@@ -25,7 +25,6 @@ spec:
       {{- if .Values.phpfpm.schedulerName }}
       schedulerName: "{{ .Values.phpfpm.schedulerName }}"
       {{- end }}
-      serviceAccountName: {{ include "modx.php-fpm.serviceAccountName" . }}
       {{- if .Values.phpfpm.extraInitContainers }}
       initContainers:
         {{ toYaml .Values.phpfpm.extraInitContainers | indent 8 }}
@@ -72,6 +71,57 @@ spec:
           volumeMounts:
               - name: modx-storage
                 mountPath: /app
+          env:
+            - name: MODX_INSTALL_TYPE
+              value: "web"  #cli / web
+            - name: MODX_DB_SERVER
+              value: "mariadb.database.svc.cluster.local"  #servicename.namespace.svc.cluster.local
+            - name: MODX_DB_CONNECTION_CHARSET
+              value: "utf8mb4"
+            - name: MODX_DB_CHARSET
+              value: "utf8mb4"
+            - name: MODX_DB_CHARSET_COLLATION
+              value: "utf8mb4_general_ci"
+            - name: MODX_TABLE_PREFIX
+              value: "modx_"
+            - name: MODX_HTTPS_PORT
+              value: "443"
+            - name: MODX_HTTP_HOST
+              value: "nginx"
+            - name: MODX_LANGUAGE
+              value: "en"
+            - name: MODX_CMS_ADMIN
+              value: "admin"
+            #- name: MODX_CMS_PASS
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: ${SITE_NAME}-secret
+            #      key: modx-cms-admin-pass
+            - name: MODX_CMS_EMAIL
+              value: "email@address.com"
+            - name: MODX_REMOVE_SETUP_DIRECTORY
+              value: "1"
+            - name: MODX_CONTEXT_WEB_PATH
+              value: "/app/"
+            - name: MODX_CONTEXT_WEB_URL
+              value: "/"
+            - name: MODX_CONTEXT_CONNECTORS_PATH
+              value: "/app/connectors/"
+            - name: MODX_CONTEXT_CONNECTORS_URL
+              value: "/connectors/"
+            - name: MODX_CONTEXT_MANAGER_PATH
+              value: "/app/manager/"
+            - name: MODX_CONTEXT_MANAGER_URL
+              value: "/manager/"
+            - name: MARIADB_DATABASE
+              value: ${SITE_NAME}
+            - name: MARIADB_USER
+              value: ${SITE_NAME}
+            #- name: MARIADB_PASSWORD
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: ${SITE_NAME}-secret
+            #      key: mariadb-modx-password
       volumes:
         - name: modx-storage
           {{- if .Values.phpfpm.persistentVolume.enabled }}

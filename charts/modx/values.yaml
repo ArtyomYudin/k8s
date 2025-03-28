@@ -31,24 +31,6 @@ rbac:
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccounts:
-  phpfpm:
-    create: true
-    # Automatically mount a ServiceAccount's API credentials?
-    # automount: true
-    # Annotations to add to the service account
-    annotations: {}
-    name:
-    labels:
-    imagePullSecrets: []
-  nginx:
-    create: true
-    # Automatically mount a ServiceAccount's API credentials?
-    # automount: true
-    # Annotations to add to the service account
-    annotations: { }
-    name:
-    labels:
-    imagePullSecrets: [ ]
   labelnamespace:
     create: true
     # Automatically mount a ServiceAccount's API credentials?
@@ -81,7 +63,6 @@ phpfpm:
     tag: 3.1.1
     # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
     imagePullSecrets: [ ]
-
 
   ## priorityClassName
   priorityClassName: ""
@@ -173,18 +154,18 @@ phpfpm:
     #fsGroup: 1001
 
   containerSecurityContext:
-    seLinuxOptions: {}
-    runAsUser: 1001
+    #seLinuxOptions: {}
+    #runAsUser: 1001
     #runAsUser: 0
-    runAsGroup: 1001
-    runAsNonRoot: true
-    privileged: false
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop: ["ALL"]
-    seccompProfile:
-      type: "RuntimeDefault"
+    #runAsGroup: 1001
+    #runAsNonRoot: true
+    #privileged: false
+    #readOnlyRootFilesystem: false
+    #allowPrivilegeEscalation: false
+    #capabilities:
+    #  drop: ["ALL"]
+    #seccompProfile:
+    #  type: "RuntimeDefault"
 
 
   service:
@@ -209,14 +190,26 @@ nginx:
     repository: artyomyudin/nginx
     tag: 1.22.1
     pullPolicy: IfNotPresent
+    imagePullSecrets: [ ]
+
+  ## priorityClassName
+  priorityClassName: ""
+
+  ## Additional container arguments
+  extraArgs: {}
+
+  ## Additional InitContainers to initialize the pod
+  extraInitContainers: []
 
   tolerations: []
 
-  ## Node labels for nginx pod assignment
+  ## Node labels for modx pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   nodeSelector: { }
+
   ## Pod affinity
   affinity: { }
+
   ## PodDisruptionBudget settings
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
   podDisruptionBudget:
@@ -283,24 +276,23 @@ nginx:
 
   ## Security context to be added to nginx pods
   podSecurityContext:
-    runAsUser: 65534
-    runAsNonRoot: true
-    runAsGroup: 65534
-    fsGroup: 65534
+    #fsGroupChangePolicy: Always
+    #supplementalGroups: [ ]
+    #fsGroup: 101
 
   containerSecurityContext:
-  #  seLinuxOptions: {}
-  #  runAsUser: 1001
-  #  #runAsUser: 0
-  #  runAsGroup: 1001
-  #  runAsNonRoot: true
-  #  privileged: false
-  #  readOnlyRootFilesystem: true
-  #  allowPrivilegeEscalation: false
-  #  capabilities:
-  #    drop: ["ALL"]
-  #  seccompProfile:
-  #    type: "RuntimeDefault"
+#    seLinuxOptions: {}
+#    runAsUser: 1001
+    runAsUser: 0
+#    runAsGroup: 1001
+#    runAsNonRoot: true
+#    privileged: false
+#    readOnlyRootFilesystem: false
+#    allowPrivilegeEscalation: false
+#    capabilities:
+#      drop: ["ALL"]
+#    seccompProfile:
+#      type: "RuntimeDefault"
 
   service:
     annotations: { }
@@ -310,7 +302,7 @@ nginx:
     loadBalancerSourceRanges: [ ]
     servicePort: 80
     sessionAffinity: None
-    type: ClusterIP
+    type: LoadBalancer
 
 
 
