@@ -71,17 +71,10 @@ spec:
           volumeMounts:
               - name: modx-storage
                 mountPath: /app
+          {{- with .Values.nginx.env }}
           env:
-            - name: SITES
-              value: "masterutm.ru"
-            - name: TZ
-              value: "Europe/Moscow"
-            - name: NGINX_SKIP_SAMPLE_CERTS
-              value: "false"
-            - name: ENDPOINT
-              value: {{ template "modx.name" . }}-{{ .Values.phpfpm.name }}
-            - name: PROXY
-              value: "false"
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: modx-storage
           {{- if .Values.phpfpm.persistentVolume.enabled }}
