@@ -178,50 +178,28 @@ phpfpm:
     type: ClusterIP
 
   env:
-    - name: MODX_INSTALL_TYPE
-      value: "web"  #cli / web
-    - name: MODX_DB_SERVER
-      value: "mariadb.database.svc.cluster.local"  #servicename.namespace.svc.cluster.local
-    - name: MODX_DB_CONNECTION_CHARSET
-      value: "utf8mb4"
-    - name: MODX_DB_CHARSET
-      value: "utf8mb4"
-    - name: MODX_DB_CHARSET_COLLATION
-      value: "utf8mb4_general_ci"
-    - name: MODX_TABLE_PREFIX
-      value: "modx_"
-    - name: MODX_HTTPS_PORT
-      value: "443"
-    - name: MODX_HTTP_HOST
-      value: "nginx"
-    - name: MODX_LANGUAGE
-      value: "en"
-    - name: MODX_CMS_ADMIN
-      value: "admin"
-    - name: MODX_CMS_PASS
-      value: ""
-    - name: MODX_CMS_EMAIL
-      value: "email@address.com"
-    - name: MODX_REMOVE_SETUP_DIRECTORY
-      value: "1"
-    - name: MODX_CONTEXT_WEB_PATH
-      value: "/app/"
-    - name: MODX_CONTEXT_WEB_URL
-      value: "/"
-    - name: MODX_CONTEXT_CONNECTORS_PATH
-      value: "/app/connectors/"
-    - name: MODX_CONTEXT_CONNECTORS_URL
-      value: "/connectors/"
-    - name: MODX_CONTEXT_MANAGER_PATH
-      value: "/app/manager/"
-    - name: MODX_CONTEXT_MANAGER_URL
-      value: "/manager/"
-    - name: MARIADB_DATABASE
-      value: ${SITE_NAME}
-    - name: MARIADB_USER
-      value: ${SITE_NAME}
-    - name: MARIADB_PASSWORD
-      value: ""
+    MODX_INSTALL_TYPE: cli  #cli / web
+    MODX_DB_SERVER: mariadb.database.svc.cluster.local  #servicename.namespace.svc.cluster.local
+    MODX_DB_CONNECTION_CHARSET: utf8mb4
+    MODX_DB_CHARSET: utf8mb4
+    MODX_DB_CHARSET_COLLATION: utf8mb4_general_ci
+    MODX_TABLE_PREFIX: modx_
+    MODX_HTTPS_PORT: 443
+    MODX_HTTP_HOST: nginx
+    MODX_LANGUAGE: en
+    MODX_CMS_ADMIN: admin
+    MODX_CMS_PASS:
+    MODX_CMS_EMAIL: email@address.com
+    MODX_REMOVE_SETUP_DIRECTORY: 1
+    MODX_CONTEXT_WEB_PATH: /app/
+    MODX_CONTEXT_WEB_URL: /
+    MODX_CONTEXT_CONNECTORS_PATH: /app/connectors/
+    MODX_CONTEXT_CONNECTORS_URL: /connectors/
+    MODX_CONTEXT_MANAGER_PATH: /app/manager/
+    MODX_CONTEXT_MANAGER_URL: /manager/
+    MARIADB_DATABASE:
+    MARIADB_USER:
+    MARIADB_PASSWORD:
 
 
 nginx:
@@ -340,14 +318,21 @@ nginx:
 #      type: "RuntimeDefault"
 
   service:
+    type: LoadBalancer
     annotations: { }
     labels: { }
-    clusterIP: ""
-    loadBalancerIP: ""
-    loadBalancerSourceRanges: [ ]
-    servicePort: 80
-    sessionAffinity: None
-    type: LoadBalancer
+    http:
+      clusterIP: ""
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: [ ]
+      servicePort: 80
+      sessionAffinity: None
+    https:
+      clusterIP: ""
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: [ ]
+      servicePort: 443
+      sessionAffinity: None
 
   env:
     - name: SITES

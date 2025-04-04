@@ -71,9 +71,10 @@ spec:
           volumeMounts:
               - name: modx-storage
                 mountPath: /app
-          {{- with .Values.phpfpm.env }}
           env:
-            {{ toYaml . | nindent 12 }}
+          {{- range $name, $value := .Values.phpfpm.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
           {{- end }}
       volumes:
         - name: modx-storage

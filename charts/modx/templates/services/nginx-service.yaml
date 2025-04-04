@@ -15,8 +15,13 @@ metadata:
 spec:
   type: {{ .Values.nginx.service.type }}
   ports:
-    - port: {{ .Values.nginx.service.servicePort }}
+    - name: http
+      port: {{ .Values.nginx.service.http.servicePort }}
       targetPort: 8080
+      protocol: TCP
+    - name: https
+      port: {{ .Values.nginx.service.https.servicePort }}
+      targetPort: 8443
       protocol: TCP
   selector:
     {{- include "modx.nginx.matchLabels" . | nindent 4 }}
