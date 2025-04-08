@@ -81,7 +81,9 @@ spec:
           {{- if .Values.phpfpm.persistentVolume.enabled }}
           persistentVolumeClaim:
             #claimName: {{ .Values.phpfpm.persistentVolume.existingClaim | default (include "modx.php-fpm.fullname" .) }}
-            claimName: {{ include "modx.php-fpm.fullname" . }}-pvc
+            #claimName: {{ include "modx.php-fpm.fullname" . }}-pvc
+            claimName: {{ if .Values.phpfpm.persistentVolume.existingClaim }}{{ .Values.phpfpm.persistentVolume.existingClaim }}
+                        {{- else }}{{ template "modx.php-fpm.fullname" . }}-pvc{{- end }}
           {{- else }}
           emptyDir: { }
           {{- end }}

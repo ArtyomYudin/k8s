@@ -71,9 +71,10 @@ spec:
           volumeMounts:
               - name: modx-storage
                 mountPath: /app
-          {{- with .Values.nginx.env }}
           env:
-            {{ toYaml . | nindent 12 }}
+          {{- range $name, $value := .Values.nginx.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
           {{- end }}
       volumes:
         - name: modx-storage

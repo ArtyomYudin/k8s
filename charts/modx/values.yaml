@@ -335,16 +335,11 @@ nginx:
       sessionAffinity: None
 
   env:
-    - name: SITES
-      value: "masterutm.ru"
-    - name: TZ
-      value: "Europe/Moscow"
-    - name: NGINX_SKIP_SAMPLE_CERTS
-      value: "false"
-    - name: ENDPOINT
-      value: modx-php-fpm
-    - name: PROXY
-      value: "false"
+    SITES: masterutm.ru
+    TZ: Europe/Moscow
+    NGINX_SKIP_SAMPLE_CERTS: false
+    ENDPOINT: modx-php-fpm
+    PROXY: false
 
 
 
