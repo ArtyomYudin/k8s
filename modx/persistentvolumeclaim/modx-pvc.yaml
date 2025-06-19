@@ -9,4 +9,4 @@ spec:
   storageClassName: tkgs-legacy-web-storage-policy
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi

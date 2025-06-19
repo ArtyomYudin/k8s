@@ -1,7 +1,8 @@
 #!/bin/sh
 
-export SITE_NAME=$1
-#export BRANCH_ID=$2
+export NAMESPACE=$1
+export SITE_NAME=$2
+export DOMAIN=$3
 
 envsubst < namespace/modx-namespace.yaml | kubectl apply -f -
 envsubst < security/rbac.yaml | kubectl apply -f -

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export SITE_NAME=$1
-#export BRANCH_ID=$2
+export NAMESPACE=$1
+export SITE_NAME=$2
+export DOMAIN=$3
 
 
 
