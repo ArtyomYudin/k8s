@@ -27,7 +27,7 @@ spec:
             claimName: ${SITE_NAME}-pv-claim
       containers:
         - name: php-fpm
-          image: artyomyudin/modx:3.1.1
+          image: artyomyudin/modx:3.1.2
           securityContext:
             runAsUser: 0
           imagePullPolicy: IfNotPresent

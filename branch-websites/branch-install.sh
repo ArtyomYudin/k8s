@@ -1,7 +1,11 @@
 #!/bin/sh
 
-export BRANCH_NAME=$1
+export NAMESPACE=$1
 export BRANCH_ID=$2
+export BRANCH_DOMAIN=$3
+
+#export BRANCH_NAME=$1
+#export BRANCH_ID=$2
 
 envsubst < namespace/branch-websites-namespace.yaml | kubectl apply -f -
 envsubst < security/rbac.yaml | kubectl apply -f -

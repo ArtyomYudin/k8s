@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: ${BRANCH_ID}-nginx
   labels:
     name: nginx
-  namespace: ${BRANCH_NAME}
+  namespace: ${NAMESPACE}
 spec:
   replicas: 1
   selector:
@@ -24,10 +24,10 @@ spec:
       volumes:
         - name: nginx-pv
           persistentVolumeClaim:
-            claimName: ${BRANCH_ID}-pv-clain
+            claimName: ${BRANCH_ID}-pv-claim
       containers:
-        - name: nginx
-          image: artyomyudin/nginx:1.22.1
+        - name: ${BRANCH_ID}-nginx
+          image: artyomyudin/nginx:1.22.1-9
           securityContext:
             runAsUser: 0
           imagePullPolicy: IfNotPresent
@@ -35,14 +35,14 @@ spec:
             - containerPort: 8443
               protocol: TCP
           env:
-            - name: SITE
-              value: "testsite.ru"
+            - name: SITES
+              value: ${BRANCH_DOMAIN}
             - name: TZ
               value: "Europe/Moscow"
             - name: NGINX_SKIP_SAMPLE_CERTS
               value: "false"
             - name: ENDPOINT
-              value: "php-fpm"
+              value: ${BRANCH_ID}-php-fpm
             - name: PROXY
               value: "false"
           volumeMounts:

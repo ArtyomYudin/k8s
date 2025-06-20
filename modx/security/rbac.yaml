@@ -20,7 +20,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: ${SITE_NAME}-cluster-role
-  namespace: ${SITE_NAME}
+  namespace: ${NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -31,14 +31,14 @@ subjects:
   name: system:serviceaccounts
 - kind: ServiceAccount
   name: default
-  namespace: ${SITE_NAME}
+  namespace: ${NAMESPACE}
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: ${SITE_NAME}-cluster-role
-  namespace: ${SITE_NAME}
+  namespace: ${NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -49,4 +49,4 @@ subjects:
   name: system:serviceaccounts
 - kind: ServiceAccount
   name: default
-  namespace: ${SITE_NAME}
+  namespace: ${NAMESPACE}

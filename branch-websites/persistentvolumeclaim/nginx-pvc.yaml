@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: ${BRANCH_ID}-pv-claim
+  name: nginx-storage
   namespace: ${NAMESPACE}
 spec:
   accessModes:
@@ -9,4 +9,4 @@ spec:
   storageClassName: tkgs-legacy-web-storage-policy
   resources:
     requests:
-      storage: 2Gi
+      storage: 0.5Gi

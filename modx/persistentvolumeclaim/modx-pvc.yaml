@@ -2,7 +2,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: ${SITE_NAME}-pv-claim
-  namespace: ${SITE_NAME}
+  namespace: ${NAMESPACE}
 spec:
   accessModes:
     - ReadWriteOnce

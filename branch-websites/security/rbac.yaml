@@ -1,7 +1,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: ${BRANCH_NAME}-cluster-role
+  name: ${BRANCH_ID}-cluster-role
 rules:
 - apiGroups:
   - policy
@@ -10,7 +10,7 @@ rules:
   verbs:
   - use
   resourceNames:
-  - ${BRANCH_NAME}
+  - ${BRANCH_ID}
 - apiGroups: [""]
   resources: ["pods", "nodes"]
   verbs: ["get", "watch", "list"]
@@ -19,34 +19,34 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: ${BRANCH_NAME}-cluster-role
-  namespace: ${BRANCH_NAME}
+  name: ${BRANCH_ID}-cluster-role
+  namespace: ${NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: ${BRANCH_NAME}-cluster-role
+  name: ${BRANCH_ID}-cluster-role
 subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: Group
   name: system:serviceaccounts
 - kind: ServiceAccount
   name: default
-  namespace: ${BRANCH_NAME}
+  namespace: ${NAMESPACE}
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: ${BRANCH_NAME}-cluster-role
-  namespace: ${BRANCH_NAME}
+  name: ${BRANCH_ID}-cluster-role
+  namespace: ${NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: ${BRANCH_NAME}-cluster-role
+  name: ${BRANCH_ID}-cluster-role
 subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: Group
   name: system:serviceaccounts
 - kind: ServiceAccount
   name: default
-  namespace: ${BRANCH_NAME}
+  namespace: ${NAMESPACE}

@@ -1,10 +1,10 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: php-fpm
+  name: ${BRANCH_ID}-php-fpm
   labels:
     name: php-fpm
-  namespace: ${BRANCH_NAME}
+  namespace: ${NAMESPACE}
 spec:
   type: ClusterIP
   selector:
