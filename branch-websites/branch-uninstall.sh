@@ -6,6 +6,7 @@ export BRANCH_DOMAIN=$3
 
 envsubst <  security/rbac.yaml | kubectl delete -f -
 envsubst <  deployments/nginx-deployment.yaml | kubectl delete -f -
+#envsubst <  deployments/nginx-configmap.yaml | kubectl delete -f -
 envsubst <  deployments/php-fpm-deployment.yaml | kubectl delete -f -
 envsubst <  services/php-fpm-service.yaml | kubectl delete -f -
 envsubst <  services/nginx-service.yaml | kubectl delete -f -

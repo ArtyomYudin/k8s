@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${BRANCH_ID}-nginx-conf
+  namespace: ${NAMESPACE}
+data:
+  ${BRANCH_ID}.center-inform.ru.conf: |
+    server {
+      listen 80;
+      listen 443 ssl http2;
+      #http2 on;
+      server_name $SERVER_NAME;
+  
+      ssl_certificate      /etc/nginx/certs/server.crt;
+      ssl_certificate_key  /etc/nginx/certs/server.key;
+  
+      ssl_session_cache    shared:SSL:1m;
+      ssl_session_timeout  5m;
+  
+      ssl_ciphers  HIGH:!aNULL:!MD5;
+      ssl_prefer_server_ciphers  on;
+  
+      root /app;
+  
+      location / {
+          index  index.php index.html index.htm;
+          # try_files $uri $uri/ @extensionless-php;
+          try_files       $uri $uri/ @rewrite;
+      }
+  
+      location @rewrite {
+          rewrite         ^/(.*)$ /index.php?q=$1;
+      }
+  
+      location /core {
+          deny all;
+          return 401;
+      }
+  
+      #error_page   500 502 503 504  /50x.html;
+      #location = /50x.html {
+      #    root   /var/www/html;
+      #}
+  
+      location ~ \.php$ {
+          fastcgi_pass   $SERVER_ENDPOINT:9000;
+          fastcgi_index  index.php;
+          #fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+          include fastcgi.conf;
+      }
+  
+      location ~ /\.ht {
+          deny  all;
+      }
+    }

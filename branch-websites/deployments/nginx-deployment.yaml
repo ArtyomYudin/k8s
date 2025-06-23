@@ -25,6 +25,12 @@ spec:
         - name: nginx-pv
           persistentVolumeClaim:
             claimName: ${BRANCH_ID}-pv-claim
+#        - name: ${BRANCH_ID}-nginx-conf
+#          configMap:
+#            name: ${BRANCH_ID}-nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
+#            items:
+#              - key:  ${BRANCH_ID}.center-inform.ru.conf
+#                path: sites-enabled/${BRANCH_ID}.center-inform.ru.conf # dig directory
       containers:
         - name: ${BRANCH_ID}-nginx
           image: artyomyudin/nginx:1.22.1-9
@@ -48,5 +54,9 @@ spec:
           volumeMounts:
             - name: nginx-pv
               mountPath: /app
+#            - name: ${BRANCH_ID}-nginx-conf
+#              mountPath: /etc/nginx # mount nginx-conf volumn to /etc/nginx
+#              readOnly: false
+
 
       

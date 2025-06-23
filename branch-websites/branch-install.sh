@@ -12,6 +12,7 @@ envsubst < security/rbac.yaml | kubectl apply -f -
 #envsubst < security/legacy-site-secret.yaml | kubectl apply -f -
 envsubst < persistentvolumeclaim/branch-pvc.yaml | kubectl apply -f -
 envsubst < deployments/php-fpm-deployment.yaml | kubectl apply -f -
+#envsubst < deployments/nginx-configmap.yaml | kubectl apply -f -
 envsubst < deployments/nginx-deployment.yaml | kubectl apply -f -
 envsubst < services/php-fpm-service.yaml | kubectl apply -f -
 envsubst < services/nginx-service.yaml | kubectl apply -f -
