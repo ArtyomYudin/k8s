@@ -25,12 +25,14 @@ spec:
         - name: nginx-pv
           persistentVolumeClaim:
             claimName: ${BRANCH_ID}-pv-claim
-#        - name: ${BRANCH_ID}-nginx-conf
-#          configMap:
-#            name: ${BRANCH_ID}-nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
-#            items:
-#              - key:  ${BRANCH_ID}.center-inform.ru.conf
-#                path: sites-enabled/${BRANCH_ID}.center-inform.ru.conf # dig directory
+        - name: ${BRANCH_ID}-nginx-certs
+          configMap:
+            name: centrinform-wildcard-cert # place ConfigMap `nginx-conf` on /etc/nginx
+            items:
+              - key: server.key
+                path: server.key # dig directory
+              - key: server.crt
+                path: server.crt # dig directory
       containers:
         - name: ${BRANCH_ID}-nginx
           image: artyomyudin/nginx:1.22.1-9
@@ -46,7 +48,7 @@ spec:
             - name: TZ
               value: "Europe/Moscow"
             - name: NGINX_SKIP_SAMPLE_CERTS
-              value: "false"
+              value: "true"
             - name: ENDPOINT
               value: ${BRANCH_ID}-php-fpm
             - name: PROXY
@@ -54,9 +56,9 @@ spec:
           volumeMounts:
             - name: nginx-pv
               mountPath: /app
-#            - name: ${BRANCH_ID}-nginx-conf
-#              mountPath: /etc/nginx # mount nginx-conf volumn to /etc/nginx
-#              readOnly: false
+            - name: ${BRANCH_ID}-nginx-certs
+              mountPath: /etc/nginx/certs/ # mount nginx-conf volumn to /etc/nginx
+              readOnly: true
 
 
       
