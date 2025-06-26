@@ -3,6 +3,7 @@
 export NAMESPACE=$1
 export BRANCH_ID=$2
 export BRANCH_DOMAIN=$3
+export ALB_IP_ADDRESS=$4
 
 #export BRANCH_NAME=$1
 #export BRANCH_ID=$2
