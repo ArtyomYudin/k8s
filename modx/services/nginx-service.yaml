@@ -18,5 +18,5 @@ spec:
       port: 443
       targetPort: 443
   type: LoadBalancer
-  loadBalancerIP: 172.30.200.7
+  loadBalancerIP: ${ALB_IP_ADDRESS}
   

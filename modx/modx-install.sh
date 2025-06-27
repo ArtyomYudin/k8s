@@ -3,6 +3,7 @@
 export NAMESPACE=$1
 export SITE_NAME=$2
 export DOMAIN=$3
+export ALB_IP_ADDRESS=$4
 
 envsubst < namespace/modx-namespace.yaml | kubectl apply -f -
 envsubst < security/rbac.yaml | kubectl apply -f -

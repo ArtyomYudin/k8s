@@ -38,7 +38,7 @@ spec:
           image: artyomyudin/nginx:1.22.1-9
           securityContext:
             runAsUser: 0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8443
               protocol: TCP
