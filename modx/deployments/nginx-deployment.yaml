@@ -25,6 +25,14 @@ spec:
         - name: nginx-pv
           persistentVolumeClaim:
             claimName: ${SITE_NAME}-pv-claim
+        - name: ${SITE_NAME}-nginx-certs
+          configMap:
+            name: masterutm-cert # place ConfigMap `nginx-conf` on /etc/nginx
+            items:
+              - key: server.key
+                path: server.key # dig directory
+              - key: server.crt
+                path: server.crt # dig directory
       containers:
         - name: nginx
           image: artyomyudin/nginx:1.22.1-9
@@ -40,7 +48,7 @@ spec:
             - name: TZ
               value: "Europe/Moscow"
             - name: NGINX_SKIP_SAMPLE_CERTS
-              value: "false"
+              value: "true"
             - name: ENDPOINT
               value: "php-fpm"
             - name: PROXY
@@ -48,5 +56,8 @@ spec:
           volumeMounts:
             - name: nginx-pv
               mountPath: /app
+            - name: ${SITE_NAME}-nginx-certs
+              mountPath: /etc/nginx/certs/ # mount nginx-conf volumn to /etc/nginx
+              readOnly: true
 
       
