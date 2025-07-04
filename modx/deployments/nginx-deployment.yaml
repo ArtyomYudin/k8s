@@ -35,7 +35,7 @@ spec:
                 path: server.crt # dig directory
       containers:
         - name: nginx
-          image: artyomyudin/nginx:1.22.1-9
+          image: artyomyudin/nginx:1.22.1-9.1
           securityContext:
             runAsUser: 0
           imagePullPolicy: IfNotPresent

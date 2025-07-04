@@ -35,12 +35,12 @@ spec:
                 path: server.crt # dig directory
       containers:
         - name: ${BRANCH_ID}-nginx
-          image: artyomyudin/nginx:1.22.1-9
+          image: artyomyudin/nginx:1.22.1-9.1
           securityContext:
             runAsUser: 0
           imagePullPolicy: Always
           ports:
-            - containerPort: 8443
+            - containerPort: 443
               protocol: TCP
           env:
             - name: SITES
